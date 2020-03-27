@@ -7,7 +7,7 @@ const { jwtSecret } = require('../config/secrets.js');
 
 router.post('/register', (req, res) => {
   let user = req.body;
-  const has = bcrypt.hashSync(user.password, 10);
+  const hash = bcrypt.hashSync(user.password, 10);
   user.password = hash;
 
   Users.add(user)
@@ -28,6 +28,7 @@ router.post('/login', (req, res) => {
       .first()
       .then(user => {
         if(user && bcrypt.compareSync(password, user.password)) {
+          const token = generateToken(user); // get a token
           res.status(200).json({
             message: `Welcome ${user.username}!`,
             token, // sending the token as well as welcome message
